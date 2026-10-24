@@ -1,0 +1,18 @@
+CONFIDENTIAL COMMERCIAL SERVICES AGREEMENT
+
+This Agreement is entered into between Enterprise Corp ("Customer") and Alpha Services LLC ("Provider").
+
+Section 1. Scope of Services
+Provider shall perform enterprise cloud hosting and security management services as described in Exhibit A.
+
+Section 4. Term and Termination
+This Agreement shall commence on the Effective Date and continue for an Initial Term of thirty-six (36) months. Either party may terminate for convenience upon sixty (60) days advance written notice.
+
+Section 8. Confidentiality and Trade Secrets
+Each party agrees to hold all Proprietary Information of the disclosing party in strict confidence and shall not disclose such information to any third party without prior written consent. This confidentiality obligation shall survive termination of this Agreement for five (5) years.
+
+Section 14.3. Indemnification and Defense
+Customer shall defend, indemnify, and hold harmless Provider, its officers, and directors against any and all claims, liabilities, losses, damages, and reasonable attorney fees arising out of the performance of this Agreement, without limitation as to aggregate financial damages.
+
+Section 18. Governing Law and Venue
+This Agreement shall be governed by and construed in accordance with the laws of the State of Delaware, without giving effect to conflict of laws principles.
