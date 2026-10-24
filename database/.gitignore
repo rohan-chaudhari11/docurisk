@@ -1,0 +1,9 @@
+# Ignore database server data files, socket files, and logs
+*.ibd
+*.frm
+*.pid
+*.sock
+*.log
+data/
+mysql_data/
+.env

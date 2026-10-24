@@ -1,0 +1,101 @@
+# =============================================================================
+# DocuRisk AI — Root .gitignore
+# Covers Frontend (Next.js), Backend (Spring Boot), Database (MySQL), & AI Service (FastAPI)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Environment & Secrets (Never commit credentials)
+# -----------------------------------------------------------------------------
+.env
+.env.*
+.env.local
+!.env.example
+*.pem
+*.key
+
+# -----------------------------------------------------------------------------
+# 1. Frontend (Next.js 16 / TypeScript / Node)
+# -----------------------------------------------------------------------------
+node_modules/
+*/node_modules/
+.next/
+*/.next/
+out/
+*/out/
+frontend/build/
+.pnp
+.pnp.*
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# -----------------------------------------------------------------------------
+# 2. Backend (Java / Spring Boot / Maven)
+# -----------------------------------------------------------------------------
+target/
+*/target/
+*.class
+*.jar
+*.war
+*.ear
+!.mvn/wrapper/maven-wrapper.jar
+.sts4-userId
+.factorypath
+.apt_generated
+
+# -----------------------------------------------------------------------------
+# 3. AI Service (Python / FastAPI / Pytest)
+# -----------------------------------------------------------------------------
+__pycache__/
+*/__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+*/.venv/
+venv/
+*/venv/
+ENV/
+env/
+.pytest_cache/
+*/.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# -----------------------------------------------------------------------------
+# 4. Database Server Files & Local Storage
+# -----------------------------------------------------------------------------
+*.ibd
+*.frm
+*.pid
+*.sock
+mysql_data/
+*/mysql_data/
+database/data/
+*.sql.gz
+
+# -----------------------------------------------------------------------------
+# 5. Uploaded Documents & Temp Artifacts (Preserve test samples)
+# -----------------------------------------------------------------------------
+uploads/
+*/uploads/
+temp_docs/
+*/temp_docs/
+
+# -----------------------------------------------------------------------------
+# 6. IDEs & Operating System Artifacts
+# -----------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+*/.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*/.vscode/
+*.swp
+*.swo

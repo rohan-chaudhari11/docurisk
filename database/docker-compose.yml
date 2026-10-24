@@ -1,0 +1,26 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: docurisk-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-docurisk_db}
+      MYSQL_USER: ${MYSQL_USER:-docurisk_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      # Mount initialization scripts into MySQL entrypoint
+      - ./schema/01_init_schema.sql:/docker-entrypoint-initdb.d/01_init_schema.sql:ro
+      - ./seeds/02_sample_contracts_seed.sql:/docker-entrypoint-initdb.d/02_sample_contracts_seed.sql:ro
+      # Data volume (stored in external named volume, never checked into git)
+      - docurisk_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password_123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  docurisk_mysql_data:
