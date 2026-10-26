@@ -99,3 +99,11 @@ Thumbs.db
 */.vscode/
 *.swp
 *.swo
+
+
+
+# Additional local secrets and credentials
+.envrc
+secrets/
+credentials.json
+service-account*.json
