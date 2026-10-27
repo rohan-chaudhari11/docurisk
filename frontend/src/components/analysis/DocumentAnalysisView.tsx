@@ -10,9 +10,13 @@ import {
   ShieldAlert,
   Info,
   GitCompare,
+  Download,
+  FileDown,
+  CheckCircle2,
 } from 'lucide-react';
 import { DocumentItem, RiskSeverity, RiskFinding } from '@/types/document';
 import { documentService } from '@/services/documentService';
+import { pdfReportService } from '@/services/pdfReportService';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Header } from '@/components/layout/Header';
@@ -38,6 +42,73 @@ export const DocumentAnalysisView: React.FC<DocumentAnalysisViewProps> = ({
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [selectedSeverity, setSelectedSeverity] = useState<'all' | RiskSeverity>('all');
   const [inspectingFinding, setInspectingFinding] = useState<RiskFinding | null>(null);
+  const [isDownloadingSummary, setIsDownloadingSummary] = useState(false);
+  const [isDownloadingReport, setIsDownloadingReport] = useState(false);
+  const [downloadFeedback, setDownloadFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  const handleDownloadSummary = async () => {
+    if (!doc) return;
+    if (!doc.summary) {
+      setDownloadFeedback({
+        type: 'error',
+        message: 'Document summary is not yet available for download.',
+      });
+      return;
+    }
+
+    setIsDownloadingSummary(true);
+    setDownloadFeedback(null);
+    try {
+      await pdfReportService.downloadSummaryPdf(doc);
+      setDownloadFeedback({
+        type: 'success',
+        message: 'Executive Summary PDF downloaded successfully.',
+      });
+      setTimeout(() => {
+        setDownloadFeedback((prev) => (prev?.type === 'success' ? null : prev));
+      }, 5000);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setDownloadFeedback({
+        type: 'error',
+        message: `Summary PDF generation failed: ${msg}`,
+      });
+    } finally {
+      setIsDownloadingSummary(false);
+    }
+  };
+
+  const handleDownloadAnalysisReport = async () => {
+    if (!doc) return;
+    if (!doc.summary && (!doc.findings || doc.findings.length === 0)) {
+      setDownloadFeedback({
+        type: 'error',
+        message: 'Analysis findings and summary are not yet available for download.',
+      });
+      return;
+    }
+
+    setIsDownloadingReport(true);
+    setDownloadFeedback(null);
+    try {
+      await pdfReportService.downloadAnalysisReportPdf(doc);
+      setDownloadFeedback({
+        type: 'success',
+        message: 'Comprehensive Analysis Report PDF downloaded successfully.',
+      });
+      setTimeout(() => {
+        setDownloadFeedback((prev) => (prev?.type === 'success' ? null : prev));
+      }, 5000);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setDownloadFeedback({
+        type: 'error',
+        message: `Analysis Report PDF generation failed: ${msg}`,
+      });
+    } finally {
+      setIsDownloadingReport(false);
+    }
+  };
 
   const fetchDoc = async (demo: boolean = false) => {
     setLoading(true);
@@ -238,7 +309,29 @@ export const DocumentAnalysisView: React.FC<DocumentAnalysisViewProps> = ({
             <span className="text-xs text-slate-400">/ Document Analysis / {doc.name}</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadSummary}
+              isLoading={isDownloadingSummary}
+              disabled={isDownloadingSummary || !doc.summary}
+              leftIcon={<Download className="w-3.5 h-3.5 text-teal-600" aria-hidden="true" />}
+              title={doc.summary ? 'Download Document Summary as PDF' : 'Summary unavailable'}
+            >
+              Download Summary
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleDownloadAnalysisReport}
+              isLoading={isDownloadingReport}
+              disabled={isDownloadingReport || (!doc.summary && (!doc.findings || doc.findings.length === 0))}
+              leftIcon={<FileDown className="w-3.5 h-3.5" aria-hidden="true" />}
+              title={doc.summary || (doc.findings && doc.findings.length > 0) ? 'Download Complete Analysis Report as PDF' : 'Analysis results unavailable'}
+            >
+              Download Analysis Report
+            </Button>
             <Link href={doc.id === 'doc-5' ? '/compare?id=comp-2' : '/compare?id=comp-1'}>
               <Button
                 variant="outline"
@@ -259,6 +352,34 @@ export const DocumentAnalysisView: React.FC<DocumentAnalysisViewProps> = ({
             </Link>
           </div>
         </div>
+
+        {/* Download Status Notification Banner */}
+        {downloadFeedback && (
+          <div
+            className={`rounded-xl border p-3 text-xs flex items-center justify-between shadow-2xs transition-all ${
+              downloadFeedback.type === 'success'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+                : 'border-rose-200 bg-rose-50 text-rose-900'
+            }`}
+            role="status"
+            aria-live="polite"
+          >
+            <div className="flex items-center gap-2">
+              {downloadFeedback.type === 'success' ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" aria-hidden="true" />
+              ) : (
+                <ShieldAlert className="w-4 h-4 text-rose-600 shrink-0" aria-hidden="true" />
+              )}
+              <span className="font-medium">{downloadFeedback.message}</span>
+            </div>
+            <button
+              onClick={() => setDownloadFeedback(null)}
+              className="text-xs font-semibold px-2 py-0.5 rounded hover:bg-black/5 cursor-pointer ml-3"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
 
         {/* Document Header Card */}
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
@@ -343,7 +464,11 @@ export const DocumentAnalysisView: React.FC<DocumentAnalysisViewProps> = ({
         {/* Executive Summary, Key Obligations, and Critical Dates */}
         {doc.summary && (
           <section aria-label="Executive Summary and Obligations">
-            <DocumentSummaryCard summary={doc.summary} />
+            <DocumentSummaryCard
+              summary={doc.summary}
+              onDownloadSummary={handleDownloadSummary}
+              isDownloadingSummary={isDownloadingSummary}
+            />
           </section>
         )}
 
@@ -355,6 +480,8 @@ export const DocumentAnalysisView: React.FC<DocumentAnalysisViewProps> = ({
               activeSeverityFilter={selectedSeverity}
               onSeverityFilterChange={(sev) => setSelectedSeverity(sev)}
               onSelectFinding={(f) => setInspectingFinding(f)}
+              onDownloadReport={handleDownloadAnalysisReport}
+              isDownloadingReport={isDownloadingReport}
             />
           </section>
         )}

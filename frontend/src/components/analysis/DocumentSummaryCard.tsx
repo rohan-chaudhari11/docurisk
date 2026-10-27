@@ -8,15 +8,21 @@ import {
   AlertTriangle,
   Cpu,
   Info,
+  Download,
 } from 'lucide-react';
 import { AnalysisSummary } from '@/types/document';
+import { Button } from '@/components/ui/Button';
 
 interface DocumentSummaryCardProps {
   summary: AnalysisSummary;
+  onDownloadSummary?: () => void;
+  isDownloadingSummary?: boolean;
 }
 
 export const DocumentSummaryCard: React.FC<DocumentSummaryCardProps> = ({
   summary,
+  onDownloadSummary,
+  isDownloadingSummary = false,
 }) => {
   const renderProviderBadge = () => {
     const status = summary.executionStatus;
@@ -103,14 +109,32 @@ export const DocumentSummaryCard: React.FC<DocumentSummaryCardProps> = ({
     <div className="space-y-4">
       {/* Executive Summary Card */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
-            <FileText className="w-4 h-4" aria-hidden="true" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-teal-50 text-teal-700">
+              <FileText className="w-4 h-4" aria-hidden="true" />
+            </div>
+            <h2 className="text-sm font-semibold text-slate-900">
+              Executive Summary
+            </h2>
           </div>
-          <h2 className="text-sm font-semibold text-slate-900">
-            Executive Summary
-          </h2>
-          {renderProviderBadge()}
+          <div className="flex items-center gap-2 flex-wrap">
+            {renderProviderBadge()}
+            {onDownloadSummary && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onDownloadSummary}
+                isLoading={isDownloadingSummary}
+                disabled={isDownloadingSummary}
+                leftIcon={<Download className="w-3.5 h-3.5 text-teal-600" aria-hidden="true" />}
+                className="text-xs py-1"
+                title="Download Executive Summary as PDF"
+              >
+                Download Summary
+              </Button>
+            )}
+          </div>
         </div>
         <p className="text-xs text-slate-700 leading-relaxed">
           {summary.executiveSummary}

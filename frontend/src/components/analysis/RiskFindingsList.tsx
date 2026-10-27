@@ -11,6 +11,7 @@ import {
   Sparkles,
   CheckCircle2,
   AlertTriangle,
+  FileDown,
 } from 'lucide-react';
 import { RiskFinding, RiskSeverity } from '@/types/document';
 import { Badge } from '@/components/ui/Badge';
@@ -21,6 +22,8 @@ interface RiskFindingsListProps {
   activeSeverityFilter: 'all' | RiskSeverity;
   onSeverityFilterChange: (sev: 'all' | RiskSeverity) => void;
   onSelectFinding: (finding: RiskFinding) => void;
+  onDownloadReport?: () => void;
+  isDownloadingReport?: boolean;
 }
 
 export const RiskFindingsList: React.FC<RiskFindingsListProps> = ({
@@ -28,6 +31,8 @@ export const RiskFindingsList: React.FC<RiskFindingsListProps> = ({
   activeSeverityFilter,
   onSeverityFilterChange,
   onSelectFinding,
+  onDownloadReport,
+  isDownloadingReport = false,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -67,16 +72,32 @@ export const RiskFindingsList: React.FC<RiskFindingsListProps> = ({
             </p>
           </div>
 
-          <div className="relative w-full sm:w-64">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden="true" />
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search findings or clauses..."
-              aria-label="Filter findings by keyword"
-              className="h-8 w-full rounded-lg border border-slate-200 bg-white pl-8 pr-3 text-xs text-slate-800 placeholder-slate-400 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
-            />
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap w-full sm:w-auto">
+            <div className="relative w-full sm:w-64">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search findings or clauses..."
+                aria-label="Filter findings by keyword"
+                className="h-8 w-full rounded-lg border border-slate-200 bg-white pl-8 pr-3 text-xs text-slate-800 placeholder-slate-400 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              />
+            </div>
+            {onDownloadReport && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onDownloadReport}
+                isLoading={isDownloadingReport}
+                disabled={isDownloadingReport}
+                leftIcon={<FileDown className="w-3.5 h-3.5 text-teal-600" aria-hidden="true" />}
+                className="shrink-0 text-xs py-1"
+                title="Download Complete Analysis Report as PDF"
+              >
+                Download Report
+              </Button>
+            )}
           </div>
         </div>
 
